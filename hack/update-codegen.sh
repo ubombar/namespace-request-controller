@@ -11,7 +11,8 @@ CODEGEN_PKG=${GOPATH}src/github.com/kubernetes/code-generator
 #                  instead of the $GOPATH directly. For normal projects this can be dropped.
 
 "${CODEGEN_PKG}"/generate-groups.sh "all" \
-  github.com/ubombar/namespace-request-controller/pkg/generated github.com/ubombar/namespace-request-controller/pkg/apis \
+  github.com/ubombar/namespace-request-controller/pkg/generated \
+  github.com/ubombar/namespace-request-controller/pkg/apis \
   namespacerequest:v1alpha1 \
   --output-base "$(dirname "${BASH_SOURCE[0]}")/../../../.." \
   --go-header-file "${SCRIPT_ROOT}"/hack/boilerplate.go.txt
