@@ -2,7 +2,7 @@
 
 module github.com/ubombar/namespace-request-controller
 
-go 1.20
+go 1.18
 
 require (
 	k8s.io/api v0.0.0-20230718054858-1b0ec3bb3296
