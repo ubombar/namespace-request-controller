@@ -328,7 +328,7 @@ func (c *Controller) createNamespace(ctx context.Context, namespaceRequestCopy *
 
 // updateStatus calls the API to update the cluster role request status.
 func (c *Controller) updateStatus(ctx context.Context, namespaceRequestCopy *v1alpha1.NamespaceRequest) {
-	if _, err := c.ubombarclientset.NamespacerequestV1alpha1().NamespaceRequests().UpdateStatus(ctx, namespaceRequestCopy, v1.UpdateOptions{}); err != nil {
+	if _, err := c.ubombarclientset.NamespacerequestV1alpha1().NamespaceRequests().Update(ctx, namespaceRequestCopy, v1.UpdateOptions{}); err != nil {
 		klog.Infoln(err)
 	}
 }
