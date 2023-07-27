@@ -63,7 +63,7 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["namespaces"]
-  verbs: ["get", "list", "create"]
+  verbs: ["get", "list", "create", "watch"]
 - apiGroups: ["namespacerequest.ubombar.github.com"]
   resources: ["namespacerequests"]
   verbs: ["*"]
