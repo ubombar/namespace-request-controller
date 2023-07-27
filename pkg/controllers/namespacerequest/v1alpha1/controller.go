@@ -24,7 +24,7 @@ import (
 	listers "github.com/ubombar/namespace-request-controller/pkg/generated/listers/namespacerequest/v1alpha1"
 )
 
-const controllerAgentName = "namespace-request-controller"
+const controllerAgentName = "namespacerequest-controller"
 
 const (
 	// SuccessSynced is used as part of the Event 'reason' when a Foo is synced
