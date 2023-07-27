@@ -7,6 +7,7 @@ import (
 	"github.com/ubombar/namespace-request-controller/pkg/signals"
 	kubeinformers "k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog/v2"
 
@@ -31,7 +32,15 @@ func main() {
 	ctx := signals.SetupSignalHandler()
 	logger := klog.FromContext(ctx)
 
-	cfg, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfig)
+	var cfg *rest.Config
+	var err error
+
+	if len(kubeconfig) == 0 {
+		cfg, err = rest.InClusterConfig() // Serviceacoount
+	} else {
+		cfg, err = clientcmd.BuildConfigFromFlags(masterURL, kubeconfig) // kubeconfig file
+	}
+
 	if err != nil {
 		logger.Error(err, "Error building kubeconfig")
 		klog.FlushAndExit(klog.ExitFlushTimeout, 1)
