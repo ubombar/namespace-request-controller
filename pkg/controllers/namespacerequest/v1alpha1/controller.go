@@ -6,6 +6,8 @@ import (
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	coreinformers "k8s.io/client-go/informers/core/v1"
@@ -18,6 +20,7 @@ import (
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/klog/v2"
 
+	"github.com/ubombar/namespace-request-controller/pkg/apis/namespacerequest/v1alpha1"
 	clientset "github.com/ubombar/namespace-request-controller/pkg/generated/clientset/versioned"
 	samplescheme "github.com/ubombar/namespace-request-controller/pkg/generated/clientset/versioned/scheme"
 	informers "github.com/ubombar/namespace-request-controller/pkg/generated/informers/externalversions/namespacerequest/v1alpha1"
@@ -28,25 +31,25 @@ const controllerAgentName = "namespacerequest-controller"
 
 const (
 	// SuccessSynced is used as part of the Event 'reason' when a Foo is synced
-	SuccessSynced = "Synced"
+	successSynced = "Synced"
 	// ErrResourceExists is used as part of the Event 'reason' when a Foo fails
 	// to sync due to a Deployment of the same name already existing.
-	ErrResourceExists = "ErrResourceExists"
+	errResourceExists = "ErrResourceExists"
 
 	// MessageResourceExists is the message used for Events when a resource
 	// fails to sync due to a Deployment already existing
-	MessageResourceExists = "Resource %q already exists and is not managed by Foo"
+	messageResourceExists = "Resource %q already exists and is not managed by Namespace Request"
 	// MessageResourceSynced is the message used for an Event fired when a Foo
 	// is synced successfully
-	MessageResourceSynced = "Foo synced successfully"
+	messageResourceSynced = "Namespace Request synced successfully"
 )
 
 // Controller is the controller implementation for Foo resources
 type Controller struct {
 	// kubeclientset is a standard kubernetes clientset
 	kubeclientset kubernetes.Interface
-	// sampleclientset is a clientset for our own API group
-	sampleclientset clientset.Interface
+	// ubombarclientset is a clientset for our own API group
+	ubombarclientset clientset.Interface
 
 	namespacesLister  corelisters.NamespaceLister
 	namespacessSynced cache.InformerSynced
@@ -69,7 +72,7 @@ type Controller struct {
 func NewController(
 	ctx context.Context,
 	kubeclientset kubernetes.Interface,
-	sampleclientset clientset.Interface,
+	ubombarclientset clientset.Interface,
 	namespaceInformer coreinformers.NamespaceInformer,
 	namespaceRequestInformer informers.NamespaceRequestInformer) *Controller {
 	logger := klog.FromContext(ctx)
@@ -87,7 +90,7 @@ func NewController(
 
 	controller := &Controller{
 		kubeclientset:          kubeclientset,
-		sampleclientset:        sampleclientset,
+		ubombarclientset:       ubombarclientset,
 		namespacesLister:       namespaceInformer.Lister(),
 		namespacessSynced:      namespaceInformer.Informer().HasSynced,
 		namespaceRequestLister: namespaceRequestInformer.Lister(),
@@ -231,15 +234,25 @@ func (c *Controller) syncHandler(ctx context.Context, key string) error {
 	// Convert the namespace/name string into a distinct namespace and name
 	// logger := klog.LoggerWithValues(klog.FromContext(ctx), "resourceName", key)
 
-	namespace, name, err := cache.SplitMetaNamespaceKey(key)
+	_, name, err := cache.SplitMetaNamespaceKey(key)
 	if err != nil {
 		utilruntime.HandleError(fmt.Errorf("invalid resource key: %s", key))
 		return nil
 	}
 
-	fmt.Printf("namespace: %v\n", namespace)
-	fmt.Printf("name: %v\n", name)
+	namespaceRequest, err := c.namespaceRequestLister.Get(name)
 
+	if err != nil {
+		if errors.IsNotFound(err) {
+			utilruntime.HandleError(fmt.Errorf("namespacerequest '%s' in work queue no longer exists", key))
+			return nil
+		}
+
+		return err
+	}
+
+	c.processNamespaceRequest(namespaceRequest.DeepCopy())
+	c.recorder.Event(namespaceRequest, corev1.EventTypeNormal, successSynced, messageResourceSynced)
 	return nil
 }
 
@@ -251,4 +264,71 @@ func (c *Controller) enqueueNamespaceRequest(obj interface{}) {
 		return
 	}
 	c.workqueue.Add(key)
+}
+
+func (c *Controller) processNamespaceRequest(namespaceRequestCopy *v1alpha1.NamespaceRequest) {
+	if namespaceRequestCopy.Status.State == "" {
+		namespaceRequestCopy.Status.State = v1alpha1.NamespaceStatusPending
+		namespaceRequestCopy.Status.Message = "Waiting for approval"
+
+		c.updateStatus(context.TODO(), namespaceRequestCopy)
+		return
+	}
+
+	switch namespaceRequestCopy.Status.State {
+	case v1alpha1.NamespaceStatusPending:
+		// If it is not approved then do nothing
+		if namespaceRequestCopy.Spec.Approved {
+			if c.validateNamespaceName(context.TODO(), namespaceRequestCopy.Spec.NamespaceName) {
+				c.createNamespace(context.TODO(), namespaceRequestCopy)
+
+				namespaceRequestCopy.Status.State = v1alpha1.NamespaceStatusCreated
+				namespaceRequestCopy.Status.Message = "Given namespace is created"
+
+				c.updateStatus(context.TODO(), namespaceRequestCopy)
+				return
+			} else {
+				namespaceRequestCopy.Status.State = v1alpha1.NamespaceStatusError
+				namespaceRequestCopy.Status.Message = "Given namespace name is not valid or already exists"
+
+				c.updateStatus(context.TODO(), namespaceRequestCopy)
+				return
+			}
+		}
+	// Record the event if it is created
+	case v1alpha1.NamespaceStatusCreated:
+		c.recorder.Event(namespaceRequestCopy, corev1.EventTypeNormal, string(v1alpha1.NamespaceStatusCreated), "Given namespace is created")
+	}
+
+}
+
+// Check if the namespace doesn't exist and name is valid
+func (c *Controller) validateNamespaceName(ctx context.Context, namespacename string) bool {
+	if namespacename == "" {
+		return false
+	}
+
+	if _, err := c.kubeclientset.CoreV1().Namespaces().Get(ctx, namespacename, v1.GetOptions{}); err == nil {
+		return false
+	}
+
+	return true
+}
+
+func (c *Controller) createNamespace(ctx context.Context, namespaceRequestCopy *v1alpha1.NamespaceRequest) {
+	ns := &corev1.Namespace{
+		ObjectMeta: v1.ObjectMeta{
+			Name: namespaceRequestCopy.Spec.NamespaceName,
+		},
+	}
+	if _, err := c.kubeclientset.CoreV1().Namespaces().Create(ctx, ns, v1.CreateOptions{}); err != nil {
+		klog.Infoln(err)
+	}
+}
+
+// updateStatus calls the API to update the cluster role request status.
+func (c *Controller) updateStatus(ctx context.Context, namespaceRequestCopy *v1alpha1.NamespaceRequest) {
+	if _, err := c.ubombarclientset.NamespacerequestV1alpha1().NamespaceRequests().UpdateStatus(ctx, namespaceRequestCopy, v1.UpdateOptions{}); err != nil {
+		klog.Infoln(err)
+	}
 }

@@ -7,10 +7,9 @@ import (
 type NamespaceRequestState string
 
 const (
-	NamespaceStatusPending  NamespaceRequestState = "Pending"
-	NamespaceStatusCreated  NamespaceRequestState = "Created"
-	NamespaceStatusRejected NamespaceRequestState = "Rejected"
-	NamespaceStatusError    NamespaceRequestState = "Error"
+	NamespaceStatusPending NamespaceRequestState = "Pending"
+	NamespaceStatusCreated NamespaceRequestState = "Created"
+	NamespaceStatusError   NamespaceRequestState = "Error"
 )
 
 // +genclient
