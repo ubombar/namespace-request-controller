@@ -1,10 +1,12 @@
-module github.bom/ubombar/namespace-request-controller
+// This is a generated file. Do not edit directly.
+
+module github.com/ubombar/namespace-request-controller
 
 go 1.20
 
 require (
 	k8s.io/apimachinery v0.27.4
-	k8s.io/code-generator v0.0.0-20230718053611-fee1cc937e21
+	k8s.io/code-generator v0.27.4
 )
 
 require (
@@ -23,22 +25,28 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	golang.org/x/mod v0.12.0 // indirect
+	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
-	golang.org/x/tools v0.11.0 // indirect
+	golang.org/x/tools v0.8.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/gengo v0.0.0-20230306165830-ab3349d207d4 // indirect
+	k8s.io/gengo v0.0.0-20220902162205-c0856e24416d // indirect
 	k8s.io/klog/v2 v2.100.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20230718181711-3c0fae5ee9fd // indirect
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.3.0 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
+)
+
+replace (
+	k8s.io/api => k8s.io/api v0.0.0-20230718054858-1b0ec3bb3296
+	k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20230718054246-5cb236977966
+	k8s.io/client-go => k8s.io/client-go v0.0.0-20230718055620-74c18d3a4044
+	k8s.io/code-generator => k8s.io/code-generator v0.0.0-20230718053611-fee1cc937e21
 )
