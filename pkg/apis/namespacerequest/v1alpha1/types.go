@@ -6,7 +6,6 @@ import (
 
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +k8s:deepcopy-gen=true
 
 type NamespaceRequest struct {
 	metav1.TypeMeta   `json:",inline"`
