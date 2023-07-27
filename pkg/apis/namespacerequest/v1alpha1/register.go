@@ -1,7 +1,7 @@
 package v1alpha1
 
 import (
-	"github.bom/ubombar/namespace-request-controller/pkg/apis/namespacerequest"
+	namespacerequest "github.com/ubombar/namespace-request-controller/pkg/apis/namespacerequest"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"

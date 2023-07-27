@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.bom/ubombar/namespace-request-controller/pkg/apis/namespacerequest/v1alpha1"
+	"github.com/ubombar/namespace-request-controller/pkg/apis/namespacerequest/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

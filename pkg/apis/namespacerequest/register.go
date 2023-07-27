@@ -1,3 +1,3 @@
 package namespacerequest
 
-const GroupName = "namespacecontroller.test.io"
+const GroupName = "namespacerequest.ubombar.github.com"

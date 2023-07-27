@@ -1,4 +1,4 @@
 // +k8s:deepcopy-gen=package
-// +groupName=namespacecontroller.test.io
+// +groupName=namespacerequest.ubombar.github.com
 
 package v1alpha1
