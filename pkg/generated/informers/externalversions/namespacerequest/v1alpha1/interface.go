@@ -25,5 +25,5 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 
 // NamespaceRequests returns a NamespaceRequestInformer.
 func (v *version) NamespaceRequests() NamespaceRequestInformer {
-	return &namespaceRequestInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+	return &namespaceRequestInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }

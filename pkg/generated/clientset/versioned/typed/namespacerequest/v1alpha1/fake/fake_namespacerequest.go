@@ -16,7 +16,6 @@ import (
 // FakeNamespaceRequests implements NamespaceRequestInterface
 type FakeNamespaceRequests struct {
 	Fake *FakeNamespacerequestV1alpha1
-	ns   string
 }
 
 var namespacerequestsResource = v1alpha1.SchemeGroupVersion.WithResource("namespacerequests")
@@ -26,8 +25,7 @@ var namespacerequestsKind = v1alpha1.SchemeGroupVersion.WithKind("NamespaceReque
 // Get takes name of the namespaceRequest, and returns the corresponding namespaceRequest object, and an error if there is any.
 func (c *FakeNamespaceRequests) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.NamespaceRequest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewGetAction(namespacerequestsResource, c.ns, name), &v1alpha1.NamespaceRequest{})
-
+		Invokes(testing.NewRootGetAction(namespacerequestsResource, name), &v1alpha1.NamespaceRequest{})
 	if obj == nil {
 		return nil, err
 	}
@@ -37,8 +35,7 @@ func (c *FakeNamespaceRequests) Get(ctx context.Context, name string, options v1
 // List takes label and field selectors, and returns the list of NamespaceRequests that match those selectors.
 func (c *FakeNamespaceRequests) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.NamespaceRequestList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewListAction(namespacerequestsResource, namespacerequestsKind, c.ns, opts), &v1alpha1.NamespaceRequestList{})
-
+		Invokes(testing.NewRootListAction(namespacerequestsResource, namespacerequestsKind, opts), &v1alpha1.NamespaceRequestList{})
 	if obj == nil {
 		return nil, err
 	}
@@ -59,15 +56,13 @@ func (c *FakeNamespaceRequests) List(ctx context.Context, opts v1.ListOptions) (
 // Watch returns a watch.Interface that watches the requested namespaceRequests.
 func (c *FakeNamespaceRequests) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewWatchAction(namespacerequestsResource, c.ns, opts))
-
+		InvokesWatch(testing.NewRootWatchAction(namespacerequestsResource, opts))
 }
 
 // Create takes the representation of a namespaceRequest and creates it.  Returns the server's representation of the namespaceRequest, and an error, if there is any.
 func (c *FakeNamespaceRequests) Create(ctx context.Context, namespaceRequest *v1alpha1.NamespaceRequest, opts v1.CreateOptions) (result *v1alpha1.NamespaceRequest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(namespacerequestsResource, c.ns, namespaceRequest), &v1alpha1.NamespaceRequest{})
-
+		Invokes(testing.NewRootCreateAction(namespacerequestsResource, namespaceRequest), &v1alpha1.NamespaceRequest{})
 	if obj == nil {
 		return nil, err
 	}
@@ -77,8 +72,7 @@ func (c *FakeNamespaceRequests) Create(ctx context.Context, namespaceRequest *v1
 // Update takes the representation of a namespaceRequest and updates it. Returns the server's representation of the namespaceRequest, and an error, if there is any.
 func (c *FakeNamespaceRequests) Update(ctx context.Context, namespaceRequest *v1alpha1.NamespaceRequest, opts v1.UpdateOptions) (result *v1alpha1.NamespaceRequest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(namespacerequestsResource, c.ns, namespaceRequest), &v1alpha1.NamespaceRequest{})
-
+		Invokes(testing.NewRootUpdateAction(namespacerequestsResource, namespaceRequest), &v1alpha1.NamespaceRequest{})
 	if obj == nil {
 		return nil, err
 	}
@@ -89,8 +83,7 @@ func (c *FakeNamespaceRequests) Update(ctx context.Context, namespaceRequest *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNamespaceRequests) UpdateStatus(ctx context.Context, namespaceRequest *v1alpha1.NamespaceRequest, opts v1.UpdateOptions) (*v1alpha1.NamespaceRequest, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewUpdateSubresourceAction(namespacerequestsResource, "status", c.ns, namespaceRequest), &v1alpha1.NamespaceRequest{})
-
+		Invokes(testing.NewRootUpdateSubresourceAction(namespacerequestsResource, "status", namespaceRequest), &v1alpha1.NamespaceRequest{})
 	if obj == nil {
 		return nil, err
 	}
@@ -100,14 +93,13 @@ func (c *FakeNamespaceRequests) UpdateStatus(ctx context.Context, namespaceReque
 // Delete takes name of the namespaceRequest and deletes it. Returns an error if one occurs.
 func (c *FakeNamespaceRequests) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewDeleteActionWithOptions(namespacerequestsResource, c.ns, name, opts), &v1alpha1.NamespaceRequest{})
-
+		Invokes(testing.NewRootDeleteActionWithOptions(namespacerequestsResource, name, opts), &v1alpha1.NamespaceRequest{})
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNamespaceRequests) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(namespacerequestsResource, c.ns, listOpts)
+	action := testing.NewRootDeleteCollectionAction(namespacerequestsResource, listOpts)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NamespaceRequestList{})
 	return err
@@ -116,8 +108,7 @@ func (c *FakeNamespaceRequests) DeleteCollection(ctx context.Context, opts v1.De
 // Patch applies the patch and returns the patched namespaceRequest.
 func (c *FakeNamespaceRequests) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.NamespaceRequest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(namespacerequestsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NamespaceRequest{})
-
+		Invokes(testing.NewRootPatchSubresourceAction(namespacerequestsResource, name, pt, data, subresources...), &v1alpha1.NamespaceRequest{})
 	if obj == nil {
 		return nil, err
 	}

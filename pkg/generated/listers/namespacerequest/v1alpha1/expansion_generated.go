@@ -5,7 +5,3 @@ package v1alpha1
 // NamespaceRequestListerExpansion allows custom methods to be added to
 // NamespaceRequestLister.
 type NamespaceRequestListerExpansion interface{}
-
-// NamespaceRequestNamespaceListerExpansion allows custom methods to be added to
-// NamespaceRequestNamespaceLister.
-type NamespaceRequestNamespaceListerExpansion interface{}

@@ -4,7 +4,17 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type NamespaceRequestState string
+
+const (
+	NamespaceStatusPending  NamespaceRequestState = "Pending"
+	NamespaceStatusCreated  NamespaceRequestState = "Created"
+	NamespaceStatusRejected NamespaceRequestState = "Rejected"
+	NamespaceStatusError    NamespaceRequestState = "Error"
+)
+
 // +genclient
+// +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 type NamespaceRequest struct {
@@ -17,10 +27,12 @@ type NamespaceRequest struct {
 
 type NamespaceRequestSpec struct {
 	NamespaceName string `json:"namespacename"`
+	Approved      bool   `json:"approved"`
 }
 
 type NamespaceRequestStatus struct {
-	Approved bool `json:"approved"`
+	State   NamespaceRequestState `json:"state"`
+	Message string                `json:"message"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

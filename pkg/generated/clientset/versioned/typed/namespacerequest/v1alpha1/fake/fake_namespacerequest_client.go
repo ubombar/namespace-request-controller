@@ -12,8 +12,8 @@ type FakeNamespacerequestV1alpha1 struct {
 	*testing.Fake
 }
 
-func (c *FakeNamespacerequestV1alpha1) NamespaceRequests(namespace string) v1alpha1.NamespaceRequestInterface {
-	return &FakeNamespaceRequests{c, namespace}
+func (c *FakeNamespacerequestV1alpha1) NamespaceRequests() v1alpha1.NamespaceRequestInterface {
+	return &FakeNamespaceRequests{c}
 }
 
 // RESTClient returns a RESTClient that is used to communicate

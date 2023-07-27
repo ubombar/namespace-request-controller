@@ -26,33 +26,32 @@ type NamespaceRequestInformer interface {
 type namespaceRequestInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
-	namespace        string
 }
 
 // NewNamespaceRequestInformer constructs a new informer for NamespaceRequest type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNamespaceRequestInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNamespaceRequestInformer(client, namespace, resyncPeriod, indexers, nil)
+func NewNamespaceRequestInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNamespaceRequestInformer(client, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNamespaceRequestInformer constructs a new informer for NamespaceRequest type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNamespaceRequestInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNamespaceRequestInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.NamespacerequestV1alpha1().NamespaceRequests(namespace).List(context.TODO(), options)
+				return client.NamespacerequestV1alpha1().NamespaceRequests().List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.NamespacerequestV1alpha1().NamespaceRequests(namespace).Watch(context.TODO(), options)
+				return client.NamespacerequestV1alpha1().NamespaceRequests().Watch(context.TODO(), options)
 			},
 		},
 		&namespacerequestv1alpha1.NamespaceRequest{},
@@ -62,7 +61,7 @@ func NewFilteredNamespaceRequestInformer(client versioned.Interface, namespace s
 }
 
 func (f *namespaceRequestInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNamespaceRequestInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNamespaceRequestInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *namespaceRequestInformer) Informer() cache.SharedIndexInformer {

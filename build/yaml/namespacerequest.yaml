@@ -28,24 +28,38 @@ spec:
       jsonPath: .spec.namespacename
     - name: Approved
       type: boolean
-      jsonPath: .status.approved
+      jsonPath: .spec.approved
+    - name: State
+      type: boolean
+      jsonPath: .status.state
+    - name: Message
+      type: boolean
+      jsonPath: .status.message
     schema:
       openAPIV3Schema:
         type: object
+        required:
+        - spec
         properties:
           spec:
             type: object
+            required:
+            - namespacename
             properties:
+              approved:
+                type: boolean
+                default: false
               namespacename:
                 type: string
           status:
             type: object
-            default:
-              approved: false
             properties:
-              approved:
-                type: boolean
-  scope: Namespaced
+              state:
+                type: string
+              message:
+                type: string
+
+  scope: Cluster
   names:
     plural: namespacerequests
     singular: namespacerequest

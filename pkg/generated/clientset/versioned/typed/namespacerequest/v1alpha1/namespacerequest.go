@@ -17,7 +17,7 @@ import (
 // NamespaceRequestsGetter has a method to return a NamespaceRequestInterface.
 // A group's client should implement this interface.
 type NamespaceRequestsGetter interface {
-	NamespaceRequests(namespace string) NamespaceRequestInterface
+	NamespaceRequests() NamespaceRequestInterface
 }
 
 // NamespaceRequestInterface has methods to work with NamespaceRequest resources.
@@ -37,14 +37,12 @@ type NamespaceRequestInterface interface {
 // namespaceRequests implements NamespaceRequestInterface
 type namespaceRequests struct {
 	client rest.Interface
-	ns     string
 }
 
 // newNamespaceRequests returns a NamespaceRequests
-func newNamespaceRequests(c *NamespacerequestV1alpha1Client, namespace string) *namespaceRequests {
+func newNamespaceRequests(c *NamespacerequestV1alpha1Client) *namespaceRequests {
 	return &namespaceRequests{
 		client: c.RESTClient(),
-		ns:     namespace,
 	}
 }
 
@@ -52,7 +50,6 @@ func newNamespaceRequests(c *NamespacerequestV1alpha1Client, namespace string) *
 func (c *namespaceRequests) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.NamespaceRequest, err error) {
 	result = &v1alpha1.NamespaceRequest{}
 	err = c.client.Get().
-		Namespace(c.ns).
 		Resource("namespacerequests").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -69,7 +66,6 @@ func (c *namespaceRequests) List(ctx context.Context, opts v1.ListOptions) (resu
 	}
 	result = &v1alpha1.NamespaceRequestList{}
 	err = c.client.Get().
-		Namespace(c.ns).
 		Resource("namespacerequests").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -86,7 +82,6 @@ func (c *namespaceRequests) Watch(ctx context.Context, opts v1.ListOptions) (wat
 	}
 	opts.Watch = true
 	return c.client.Get().
-		Namespace(c.ns).
 		Resource("namespacerequests").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,7 +92,6 @@ func (c *namespaceRequests) Watch(ctx context.Context, opts v1.ListOptions) (wat
 func (c *namespaceRequests) Create(ctx context.Context, namespaceRequest *v1alpha1.NamespaceRequest, opts v1.CreateOptions) (result *v1alpha1.NamespaceRequest, err error) {
 	result = &v1alpha1.NamespaceRequest{}
 	err = c.client.Post().
-		Namespace(c.ns).
 		Resource("namespacerequests").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(namespaceRequest).
@@ -110,7 +104,6 @@ func (c *namespaceRequests) Create(ctx context.Context, namespaceRequest *v1alph
 func (c *namespaceRequests) Update(ctx context.Context, namespaceRequest *v1alpha1.NamespaceRequest, opts v1.UpdateOptions) (result *v1alpha1.NamespaceRequest, err error) {
 	result = &v1alpha1.NamespaceRequest{}
 	err = c.client.Put().
-		Namespace(c.ns).
 		Resource("namespacerequests").
 		Name(namespaceRequest.Name).
 		VersionedParams(&opts, scheme.ParameterCodec).
@@ -125,7 +118,6 @@ func (c *namespaceRequests) Update(ctx context.Context, namespaceRequest *v1alph
 func (c *namespaceRequests) UpdateStatus(ctx context.Context, namespaceRequest *v1alpha1.NamespaceRequest, opts v1.UpdateOptions) (result *v1alpha1.NamespaceRequest, err error) {
 	result = &v1alpha1.NamespaceRequest{}
 	err = c.client.Put().
-		Namespace(c.ns).
 		Resource("namespacerequests").
 		Name(namespaceRequest.Name).
 		SubResource("status").
@@ -139,7 +131,6 @@ func (c *namespaceRequests) UpdateStatus(ctx context.Context, namespaceRequest *
 // Delete takes name of the namespaceRequest and deletes it. Returns an error if one occurs.
 func (c *namespaceRequests) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	return c.client.Delete().
-		Namespace(c.ns).
 		Resource("namespacerequests").
 		Name(name).
 		Body(&opts).
@@ -154,7 +145,6 @@ func (c *namespaceRequests) DeleteCollection(ctx context.Context, opts v1.Delete
 		timeout = time.Duration(*listOpts.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
-		Namespace(c.ns).
 		Resource("namespacerequests").
 		VersionedParams(&listOpts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -167,7 +157,6 @@ func (c *namespaceRequests) DeleteCollection(ctx context.Context, opts v1.Delete
 func (c *namespaceRequests) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.NamespaceRequest, err error) {
 	result = &v1alpha1.NamespaceRequest{}
 	err = c.client.Patch(pt).
-		Namespace(c.ns).
 		Resource("namespacerequests").
 		Name(name).
 		SubResource(subresources...).

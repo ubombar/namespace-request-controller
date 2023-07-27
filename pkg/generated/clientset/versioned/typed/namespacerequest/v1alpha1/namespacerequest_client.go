@@ -20,8 +20,8 @@ type NamespacerequestV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *NamespacerequestV1alpha1Client) NamespaceRequests(namespace string) NamespaceRequestInterface {
-	return newNamespaceRequests(c, namespace)
+func (c *NamespacerequestV1alpha1Client) NamespaceRequests() NamespaceRequestInterface {
+	return newNamespaceRequests(c)
 }
 
 // NewForConfig creates a new NamespacerequestV1alpha1Client for the given config.

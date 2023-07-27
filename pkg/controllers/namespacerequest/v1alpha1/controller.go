@@ -110,7 +110,7 @@ func NewController(
 	// processing. This way, we don't need to implement custom logic for
 	// handling Deployment resources. More info on this pattern:
 	// https://github.com/kubernetes/community/blob/8cafef897a22026d42f5e5bb3f104febe7e29830/contributors/devel/controllers.md
-	// deploymentInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+	// namespaceInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 	// 	AddFunc: controller.handleObject,
 	// 	UpdateFunc: func(old, new interface{}) {
 	// 		newDepl := new.(*appsv1.Deployment)

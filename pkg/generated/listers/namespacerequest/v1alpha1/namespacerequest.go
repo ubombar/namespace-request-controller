@@ -15,8 +15,9 @@ type NamespaceRequestLister interface {
 	// List lists all NamespaceRequests in the indexer.
 	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.NamespaceRequest, err error)
-	// NamespaceRequests returns an object that can list and get NamespaceRequests.
-	NamespaceRequests(namespace string) NamespaceRequestNamespaceLister
+	// Get retrieves the NamespaceRequest from the index for a given name.
+	// Objects returned here must be treated as read-only.
+	Get(name string) (*v1alpha1.NamespaceRequest, error)
 	NamespaceRequestListerExpansion
 }
 
@@ -38,41 +39,9 @@ func (s *namespaceRequestLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// NamespaceRequests returns an object that can list and get NamespaceRequests.
-func (s *namespaceRequestLister) NamespaceRequests(namespace string) NamespaceRequestNamespaceLister {
-	return namespaceRequestNamespaceLister{indexer: s.indexer, namespace: namespace}
-}
-
-// NamespaceRequestNamespaceLister helps list and get NamespaceRequests.
-// All objects returned here must be treated as read-only.
-type NamespaceRequestNamespaceLister interface {
-	// List lists all NamespaceRequests in the indexer for a given namespace.
-	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.NamespaceRequest, err error)
-	// Get retrieves the NamespaceRequest from the indexer for a given namespace and name.
-	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.NamespaceRequest, error)
-	NamespaceRequestNamespaceListerExpansion
-}
-
-// namespaceRequestNamespaceLister implements the NamespaceRequestNamespaceLister
-// interface.
-type namespaceRequestNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all NamespaceRequests in the indexer for a given namespace.
-func (s namespaceRequestNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NamespaceRequest, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.NamespaceRequest))
-	})
-	return ret, err
-}
-
-// Get retrieves the NamespaceRequest from the indexer for a given namespace and name.
-func (s namespaceRequestNamespaceLister) Get(name string) (*v1alpha1.NamespaceRequest, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
+// Get retrieves the NamespaceRequest from the index for a given name.
+func (s *namespaceRequestLister) Get(name string) (*v1alpha1.NamespaceRequest, error) {
+	obj, exists, err := s.indexer.GetByKey(name)
 	if err != nil {
 		return nil, err
 	}
