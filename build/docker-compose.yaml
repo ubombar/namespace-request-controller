@@ -1,0 +1,12 @@
+version: '3.1'
+
+services:
+  nodelabeler:
+    container_name: namespacerequest
+    restart: always
+    build:
+      context: .
+      dockerfile: ./build/images/namespacerequest/Dockerfile
+    image: namespacerequest:latest
+    volumes:
+      - ~/.kube/:/ubombar/.kube/
