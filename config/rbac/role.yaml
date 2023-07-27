@@ -1,0 +1,32 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - namespacerequest.ubombar.github.com
+  resources:
+  - namespacerequests
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - namespacerequest.ubombar.github.com
+  resources:
+  - namespacerequests/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - namespacerequest.ubombar.github.com
+  resources:
+  - namespacerequests/status
+  verbs:
+  - get
+  - patch
+  - update

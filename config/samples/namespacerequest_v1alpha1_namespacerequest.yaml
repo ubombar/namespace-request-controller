@@ -1,0 +1,12 @@
+apiVersion: namespacerequest.ubombar.github.com/v1alpha1
+kind: NamespaceRequest
+metadata:
+  labels:
+    app.kubernetes.io/name: namespacerequest
+    app.kubernetes.io/instance: namespacerequest-sample
+    app.kubernetes.io/part-of: namespace-request-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: namespace-request-controller
+  name: namespacerequest-sample
+spec:
+  # TODO(user): Add fields here
