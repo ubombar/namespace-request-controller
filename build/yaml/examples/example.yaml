@@ -1,0 +1,6 @@
+apiVersion: namespacerequest.ubombar.github.com/v1alpha1
+kind: NamespaceRequest
+metadata:
+  name: test
+spec:
+  namespacename: "test-namespace"
