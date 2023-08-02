@@ -89,7 +89,12 @@ func NewController(
 	namespaceRequestInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: controller.enqueueNamespaceRequest,
 		UpdateFunc: func(old, new interface{}) {
-			controller.enqueueNamespaceRequest(new)
+			newObject := new.(*v1alpha1.NamespaceRequest)
+			oldObject := old.(*v1alpha1.NamespaceRequest)
+			if newObject.ResourceVersion == oldObject.ResourceVersion {
+				return
+			}
+			controller.enqueueNamespaceRequest(newObject)
 		},
 	})
 
