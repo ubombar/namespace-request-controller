@@ -10,11 +10,9 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
-	coreinformers "k8s.io/client-go/informers/core/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
-	corelisters "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
@@ -32,13 +30,6 @@ const controllerAgentName = "namespacerequest-controller"
 const (
 	// SuccessSynced is used as part of the Event 'reason' when a Foo is synced
 	successSynced = "Synced"
-	// ErrResourceExists is used as part of the Event 'reason' when a Foo fails
-	// to sync due to a Deployment of the same name already existing.
-	errResourceExists = "ErrResourceExists"
-
-	// MessageResourceExists is the message used for Events when a resource
-	// fails to sync due to a Deployment already existing
-	messageResourceExists = "Resource %q already exists and is not managed by Namespace Request"
 	// MessageResourceSynced is the message used for an Event fired when a Foo
 	// is synced successfully
 	messageResourceSynced = "Namespace Request synced successfully"
@@ -50,9 +41,6 @@ type Controller struct {
 	kubeclientset kubernetes.Interface
 	// ubombarclientset is a clientset for our own API group
 	ubombarclientset clientset.Interface
-
-	namespacesLister  corelisters.NamespaceLister
-	namespacessSynced cache.InformerSynced
 
 	namespaceRequestLister listers.NamespaceRequestLister
 	namespaceRequestSynced cache.InformerSynced
@@ -73,7 +61,6 @@ func NewController(
 	ctx context.Context,
 	kubeclientset kubernetes.Interface,
 	ubombarclientset clientset.Interface,
-	namespaceInformer coreinformers.NamespaceInformer,
 	namespaceRequestInformer informers.NamespaceRequestInformer) *Controller {
 	logger := klog.FromContext(ctx)
 
@@ -91,8 +78,6 @@ func NewController(
 	controller := &Controller{
 		kubeclientset:          kubeclientset,
 		ubombarclientset:       ubombarclientset,
-		namespacesLister:       namespaceInformer.Lister(),
-		namespacessSynced:      namespaceInformer.Informer().HasSynced,
 		namespaceRequestLister: namespaceRequestInformer.Lister(),
 		namespaceRequestSynced: namespaceRequestInformer.Informer().HasSynced,
 		workqueue:              workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "NamespaceRequests"),
@@ -107,26 +92,6 @@ func NewController(
 			controller.enqueueNamespaceRequest(new)
 		},
 	})
-	// Set up an event handler for when Deployment resources change. This
-	// handler will lookup the owner of the given Deployment, and if it is
-	// owned by a Foo resource then the handler will enqueue that Foo resource for
-	// processing. This way, we don't need to implement custom logic for
-	// handling Deployment resources. More info on this pattern:
-	// https://github.com/kubernetes/community/blob/8cafef897a22026d42f5e5bb3f104febe7e29830/contributors/devel/controllers.md
-	// namespaceInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
-	// 	AddFunc: controller.handleObject,
-	// 	UpdateFunc: func(old, new interface{}) {
-	// 		newDepl := new.(*appsv1.Deployment)
-	// 		oldDepl := old.(*appsv1.Deployment)
-	// 		if newDepl.ResourceVersion == oldDepl.ResourceVersion {
-	// 			// Periodic resync will send update events for all known Deployments.
-	// 			// Two different versions of the same Deployment will always have different RVs.
-	// 			return
-	// 		}
-	// 		controller.handleObject(new)
-	// 	},
-	// 	DeleteFunc: controller.handleObject,
-	// })
 
 	return controller
 }
