@@ -80,68 +80,68 @@ rules:
 - apiGroups: ["namespacerequest.ubombar.github.com"]
   resources: ["*"]
   verbs: ["*"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  labels:
-    app: ubombar
-    component: controller
-  name: ubombar:namespacerequestscontroller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: ubombar:namespacerequestscontroller
-subjects:
-- kind: ServiceAccount
-  name: namespacerequest
-  namespace: ubombar
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: ubombar
-    component: controller
-  name: namespacerequest
-  namespace: ubombar
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ubombar
-      component: controller
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      labels:
-        app: ubombar
-        component: controller
-    spec:
-      containers:
-      - command:
-        - ./namespacerequest
-        image: ubombar/namespacerequest:latest
-        imagePullPolicy: Always
-        name: namespacerequest
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "128Mi"
-            cpu: "100m"
-      priorityClassName: system-cluster-critical
-      nodeSelector:
-        node-role.kubernetes.io/control-plane: ""
-      serviceAccountName: namespacerequest
-      tolerations:
-      - key: CriticalAddonsOnly
-        operator: Exists
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/master
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/control-plane
-      - effect: NoSchedule
-        key: node.kubernetes.io/unschedulable
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   labels:
+#     app: ubombar
+#     component: controller
+#   name: ubombar:namespacerequestscontroller
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: ClusterRole
+#   name: ubombar:namespacerequestscontroller
+# subjects:
+# - kind: ServiceAccount
+#   name: namespacerequest
+#   namespace: ubombar
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   labels:
+#     app: ubombar
+#     component: controller
+#   name: namespacerequest
+#   namespace: ubombar
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: ubombar
+#       component: controller
+#   strategy:
+#     type: Recreate
+#   template:
+#     metadata:
+#       labels:
+#         app: ubombar
+#         component: controller
+#     spec:
+#       containers:
+#       - command:
+#         - ./namespacerequest
+#         image: ubombar/namespacerequest:latest
+#         imagePullPolicy: Always
+#         name: namespacerequest
+#         resources:
+#           requests:
+#             memory: "128Mi"
+#             cpu: "100m"
+#           limits:
+#             memory: "128Mi"
+#             cpu: "100m"
+#       priorityClassName: system-cluster-critical
+#       nodeSelector:
+#         node-role.kubernetes.io/control-plane: ""
+#       serviceAccountName: namespacerequest
+#       tolerations:
+#       - key: CriticalAddonsOnly
+#         operator: Exists
+#       - effect: NoSchedule
+#         key: node-role.kubernetes.io/master
+#       - effect: NoSchedule
+#         key: node-role.kubernetes.io/control-plane
+#       - effect: NoSchedule
+#         key: node.kubernetes.io/unschedulable
