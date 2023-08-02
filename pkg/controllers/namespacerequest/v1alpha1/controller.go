@@ -28,14 +28,14 @@ import (
 const controllerAgentName = "namespacerequest-controller"
 
 const (
-	// SuccessSynced is used as part of the Event 'reason' when a Foo is synced
+	// SuccessSynced is used as part of the Event 'reason' when a NamespaceRequests is synced
 	successSynced = "Synced"
-	// MessageResourceSynced is the message used for an Event fired when a Foo
+	// MessageResourceSynced is the message used for an Event fired when a NamespaceRequests
 	// is synced successfully
 	messageResourceSynced = "Namespace Request synced successfully"
 )
 
-// Controller is the controller implementation for Foo resources
+// Controller is the controller implementation for NamespaceRequests resources
 type Controller struct {
 	// kubeclientset is a standard kubernetes clientset
 	kubeclientset kubernetes.Interface
@@ -85,7 +85,7 @@ func NewController(
 	}
 
 	logger.Info("Setting up event handlers")
-	// Set up an event handler for when Foo resources change
+	// Set up an event handler for when NamespaceRequests resources change
 	namespaceRequestInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: controller.enqueueNamespaceRequest,
 		UpdateFunc: func(old, new interface{}) {
@@ -106,7 +106,7 @@ func (c *Controller) Run(ctx context.Context, workers int) error {
 	logger := klog.FromContext(ctx)
 
 	// Start the informer factories to begin populating the informer caches
-	logger.Info("Starting Foo controller")
+	logger.Info("Starting NamespaceRequests controller")
 
 	// Wait for the caches to be synced before starting workers
 	logger.Info("Waiting for informer caches to sync")
@@ -116,7 +116,7 @@ func (c *Controller) Run(ctx context.Context, workers int) error {
 	}
 
 	logger.Info("Starting workers", "count", workers)
-	// Launch two workers to process Foo resources
+	// Launch two workers to process NamespaceRequests resources
 	for i := 0; i < workers; i++ {
 		go wait.UntilWithContext(ctx, c.runWorker, time.Second)
 	}
@@ -171,7 +171,7 @@ func (c *Controller) processNextWorkItem(ctx context.Context) bool {
 			return nil
 		}
 		// Run the syncHandler, passing it the namespace/name string of the
-		// Foo resource to be synced.
+		// NamespaceRequests resource to be synced.
 		if err := c.syncHandler(ctx, key); err != nil {
 			// Put the item back on the workqueue to handle any transient errors.
 			c.workqueue.AddRateLimited(key)
@@ -193,7 +193,7 @@ func (c *Controller) processNextWorkItem(ctx context.Context) bool {
 }
 
 // syncHandler compares the actual state with the desired, and attempts to
-// converge the two. It then updates the Status block of the Foo resource
+// converge the two. It then updates the Status block of the NamespaceRequests resource
 // with the current status of the resource.
 func (c *Controller) syncHandler(ctx context.Context, key string) error {
 	// Convert the namespace/name string into a distinct namespace and name
