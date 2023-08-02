@@ -295,11 +295,12 @@ func (c *Controller) processNamespaceRequest(namespaceRequestCopy *v1alpha1.Name
 				return
 			}
 		}
+		return
 	// Record the event if it is created
 	case v1alpha1.NamespaceStatusCreated:
 		c.recorder.Event(namespaceRequestCopy, corev1.EventTypeNormal, string(v1alpha1.NamespaceStatusCreated), "Given namespace is created")
+		return
 	}
-
 }
 
 // Check if the namespace doesn't exist and name is valid
