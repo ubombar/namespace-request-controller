@@ -62,7 +62,6 @@ func main() {
 	customInformerFactory := informers.NewSharedInformerFactory(exampleClient, time.Second*30)
 
 	controller := controllerv1alpha1.NewController(ctx, kubeClient, exampleClient,
-		kubeInformerFactory.Core().V1().Namespaces(),
 		customInformerFactory.Namespacerequest().V1alpha1().NamespaceRequests())
 
 	// notice that there is no need to run Start methods in a separate goroutine. (i.e. go kubeInformerFactory.Start(ctx.done())
